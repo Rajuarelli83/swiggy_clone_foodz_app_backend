@@ -1,117 +1,37 @@
-<<<<<<< HEAD
-# swiggy_clone_foodz_backend
-=======
-const express = require("express");
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const cors = require("cors");
-require("dotenv").config();
+<h1 align="center">🍔 Swiggy Clone (Food'z) App</h1>
+<h3 align="center">An application that replicates Swiggy with core food-ordering features.</h3>
 
-const app = express();
-const port = 5000;
+---
 
-const JWT_SECRET = process.env.JWT_SECRET;
-// Middleware
-app.use(cors());
-app.use(express.json());
+## ✨ Functionalities Implemented
+- 🔐 **User Authentication** – Secure login and sign-up using **JWT**.
+- 🔎 **Dynamic Search** – Search & filter restaurants and menu items (diet filter, top-rated, toggle rating).
+- ⚡ **User-Friendly Pages** – Home, Cart, Favourites, Profile, Contact (with **Email.js** integration for contact forms).
+- 🔁 **State Management** – Used **Redux Toolkit** for Cart & Favourites (user-specific).
+- 🧭 **APIs** – Built APIs for:
+  - `addToFavourites`, `getFavourites`, `clearFavourites`  
+  - `getCart`, `addItemToCart`, `clearCart`  
+  - Restaurant & menu list (integrated with live Swiggy API).  
+- 📲 **Offline Support** – Ensured offline usage and added custom error pages.
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB error:", err));
+---
+## 🔧 Backend & Database
+<p align="left">
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="Node.js" width="60" height="60" style="margin-right:20px;"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg" alt="Express.js" width="60" height="60" style="margin-right:20px;"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg" alt="MongoDB" width="60" height="60"/>
+</p>
 
-// Schema
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  password: String
-});
+---
+## 🎨 Frontend & UI Frameworks
+<p align="left">
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original-wordmark.svg" alt="React" width="50" height="50" style="margin-right:20px;"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg" alt="Redux" width="50" height="50" style="margin-right:20px;"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="HTML5" width="50" height="50" style="margin-right:20px;"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="CSS3" width="50" height="50" style="margin-right:20px;"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-original-wordmark.svg" alt="Bootstrap" width="50" height="50"/>
+</p>
 
-const User = mongoose.model("User", userSchema);
 
-// Signup Route
-app.post("/api/signup", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Save user
-    const newUser = new User({ name, email, password: hashedPassword });
-    await newUser.save();
-
-    // Generate JWT
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h"
-    });
-
-    // Respond with token and user info
-    res.status(201).json({
-      message: "User registered successfully",
-      token,
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email
-      }
-    });
-  } catch (error) {
-    console.error("Signup Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-// Login Route
-app.post("/api/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    // Verify password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
-
-    // Generate token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h"
-    });
-
-    // Respond with token and user info
-    res.json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-// Protected route example (optional)
-app.get("/", (req, res) => {
-  res.send("✅ Backend is running");
-});
-
-app.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
-});
-
-console.log("MONGO_URL =", process.env.MONGO_URL);
-console.log("JWT_SECRET =", process.env.JWT_SECRET);
->>>>>>> a2c047f (Initial backend commit)
